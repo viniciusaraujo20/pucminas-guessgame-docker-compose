@@ -1,12 +1,17 @@
-.venv
-.vscode
-Dockerfile*
-docker-compose*
-*/__pycache__/*
-db/*
-*.sqlite3
+# Ignore pastas e arquivos temporários
+venv/
+__pycache__/
 *.pyc
-*.pyo
-bin/
-*.lock
+*.log
 
+# Node
+node_modules/
+build/
+dist/
+
+# Docker
+*.pid
+.env
+*.db
+*.sqlite
+*.sock

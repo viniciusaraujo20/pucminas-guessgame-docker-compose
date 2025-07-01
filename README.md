@@ -1,157 +1,118 @@
-Aqui está um exemplo de um arquivo `README.md` para o seu jogo:
+# 🎮 Guess Game com Docker Compose
 
----
+Este projeto implementa o jogo de adivinhação [Guess Game](https://github.com/fams/guess_game), estruturado com Docker Compose, contemplando backend Flask, frontend React, banco PostgreSQL e um proxy reverso NGINX com balanceamento de carga.
 
-# Jogo de Adivinhação com Flask
+## 🎯 Objetivo  
+Criar uma arquitetura em containers com:  
+- Backend Python Flask  
+- Frontend React  
+- Banco de Dados PostgreSQL com volume persistente  
+- NGINX servindo o frontend e atuando como proxy reverso entre múltiplos backends  
 
-Este é um simples jogo de adivinhação desenvolvido utilizando o framework Flask. O jogador deve adivinhar uma senha criada aleatoriamente, e o sistema fornecerá feedback sobre o número de letras corretas e suas respectivas posições.
+## 🧱 Estrutura da Solução  
+| Serviço    | Descrição                                               | Porta     |  
+|------------|---------------------------------------------------------|-----------|  
+| `db`       | Banco PostgreSQL com volume persistente                 | 5432 (int)|  
+| `backend1` | Primeira instância da API Flask                         | 5000 (int)|  
+| `backend2` | Segunda instância da API Flask                          | 5000 (int)|  
+| `frontend` | Frontend React (construído via Dockerfile)              | interno   |  
+| `nginx`    | Proxy reverso para `/api/` e servidor de arquivos React | 80        |  
 
-## Funcionalidades
+## 📦 Requisitos Atendidos  
+- [x] Backend Python Flask rodando em container  
+- [x] Banco de dados Postgres com volume Docker  
+- [x] Frontend React servido via NGINX  
+- [x] NGINX com balanceamento de carga entre múltiplas instâncias do backend  
+- [x] Resiliência com `restart: always` para todos os serviços  
+- [x] Fácil atualização de qualquer serviço  
+- [x] Comunicação total entre os containers  
+- [x] Volume persistente `pgdata` para dados do Postgres  
 
-- Criação de um novo jogo com uma senha fornecida pelo usuário.
-- Adivinhe a senha e receba feedback se as letras estão corretas e/ou em posições corretas.
-- As senhas são armazenadas  utilizando base64.
-- As adivinhações incorretas retornam uma mensagem com dicas.
-  
-## Requisitos
+## 📁 Estrutura de Diretórios  
+\`\`\`
+guess_game/
+├── docker-compose.yml
+├── guess/               # Backend Flask
+│   └── Dockerfile
+├── frontend/            # Frontend React
+│   └── Dockerfile
+├── nginx/               # Configuração do proxy reverso
+│   └── nginx.conf
+├── repository/          # Persistência em banco
+├── run.py               # Entry point do backend
+├── start-backend.sh     # Script de inicialização Flask
+\`\`\`
 
-- Python 3.8+
-- Flask
-- Um banco de dados local (ou um mecanismo de armazenamento configurado em `current_app.db`)
-- node 18.17.0
+## ⚙️ Instalação e Execução  
+1. Clone o repositório  
+\`\`\`bash
+git clone https://github.com/fams/guess_game  
+cd guess_game  
+\`\`\`  
 
-## Instalação
+2. Execute o build e suba os serviços  
+\`\`\`bash
+docker compose up -d --build  
+\`\`\`  
 
-1. Clone o repositório:
+3. Acesse a aplicação  
+🌐 http://localhost  
 
-   ```bash
-   git clone https://github.com/fams/guess_game.git
-   cd guess-game
-   ```
+## ♻️ Atualização de Componentes  
+Atualize backend:  
+\`\`\`bash
+docker compose build backend1 backend2  
+docker compose up -d  
+\`\`\`  
 
-2. Crie um ambiente virtual e ative-o:
+Atualize frontend:  
+\`\`\`bash
+docker compose build frontend  
+docker compose up -d  
+\`\`\`  
 
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate  # Linux/Mac
-   venv\Scripts\activate  # Windows
-   ```
+Atualize PostgreSQL: troque a versão no \`docker-compose.yml\`, mantendo o volume \`pgdata\`.  
 
-3. Instale as dependências:
+## 🧠 Estratégia Técnica  
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+### 🔀 NGINX como Proxy Reverso  
+Configuração (\`nginx.conf\`):  
+\`\`\`
+upstream backend {
+    server backend1:5000;
+    server backend2:5000;
+}
+location /api/ {
+    proxy_pass http://backend;
+}
+\`\`\`
 
-4. Configure o banco de dados com as variáveis de ambiente no arquivo start-backend.sh
-    1. Para sqlite
+- \`/api/\` é balanceado entre as instâncias do backend  
+- \`/\` serve os arquivos do frontend React  
 
-        ```bash
-            export FLASK_APP="run.py"
-            export FLASK_DB_TYPE="sqlite"            # Use SQLITE
-            export FLASK_DB_PATH="caminho/db.sqlite" # caminho do banco
-        ```
+### 🗄️ Volume Persistente  
+O banco PostgreSQL salva dados em:  
+\`\`\`yaml
+volumes:
+  - pgdata:/var/lib/postgresql/data
+\`\`\`
 
-    2. Para Postgres
+Salvos no host via \`/var/lib/docker/volumes\`.  
 
-        ```bash
-            export FLASK_APP="run.py"
-            export FLASK_DB_TYPE="postgres"       # Use postgres
-            export FLASK_DB_USER="postgres"       # Usuário do banco
-            export FLASK_DB_NAME="postgres"       # Nome do Banco
-            export FLASK_DB_PASSWORD="secretpass" # Senha do banco
-            export FLASK_DB_HOST="localhost"      # Hostname
-            export FLASK_DB_PORT="5432"           # Porta
-        ```
+### 🛡️ Resiliência  
+Todos os serviços usam \`restart: always\`, garantindo:  
+- Autorestart em falhas  
+- Estabilidade contínua mesmo após reinicializações  
 
-    3. Para DynamoDB
+## 🎮 Como Jogar  
+1. Acesse http://localhost  
+2. Clique em "Create Game" e insira uma senha  
+3. Copie o \`game_id\` gerado  
+4. Vá para a aba "Breaker", insira o \`game_id\` e tente adivinhar  
 
-        ```bash
-        export FLASK_APP="run.py"
-        export FLASK_DB_TYPE="dynamodb"       # Use postgres
-        export AWS_DEFAULT_REGION="us-east-1" # AWS region
-        export AWS_ACCESS_KEY_ID="FAKEACCESSKEY123456" 
-        export AWS_SECRET_ACCESS_KEY="FakeSecretAccessKey987654321"
-        export AWS_SESSION_TOKEN="FakeSessionTokenABCDEFGHIJKLMNOPQRSTUVXYZ1234567890"
-        ```
-
-5. Execute o backend
-
-   ```bash
-   ./start-backend.sh &
-   ```
-
-6. Cuidado! verifique se o seu linux está lendo o arquivo .sh com fim de linha do windows CRLF. Para verificar utilize o vim -b start-backend.sh
-
-## Frontend
-No diretorio de frontend
-
-1. Instale o node com o nvm. Se não tiver o nvm instalado, siga o [tutorial](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating)
-
-    ```bash
-    nvm install 18.17.0
-    nvm use 18.17.0
-    # Habilite o yarn
-    corepack enable
-    ```
-
-2. Instale as dependências do node com o npm:
-
-    ```bash
-    npm install
-    ```
-
-3. Exporte a url onde está executando o backend e execute o backend.
-
-   ```bash
-    export REACT_APP_BACKEND_URL=http://localhost:5000
-    yarn start
-   ```
-
-## Como Jogar
-
-### 1. Criar um novo jogo
-
-Acesse a url do frontend http://localhost:3000
-
-Digite uma frase secreta
-
-Envie
-
-Salve o game-id
-
-
-### 2. Adivinhar a senha
-
-Acesse a url do frontend http://localhost:3000
-
-Vá para o endponint breaker
-
-entre com o game_id que foi gerado pelo Creator
-
-Tente adivinhar
-
-## Estrutura do Código
-
-### Rotas:
-
-- **`/create`**: Cria um novo jogo. Armazena a senha codificada em base64 e retorna um `game_id`.
-- **`/guess/<game_id>`**: Permite ao usuário adivinhar a senha. Compara a adivinhação com a senha armazenada e retorna o resultado.
-
-### Classes Importantes:
-
-- **`Guess`**: Classe responsável por gerenciar a lógica de comparação entre a senha e a tentativa do jogador.
-- **`WrongAttempt`**: Exceção personalizada que é levantada quando a tentativa está incorreta.
-
-
-
-## Melhorias Futuras
-
-- Implementar autenticação de usuário para salvar e carregar jogos.
-- Adicionar limite de tentativas.
-- Melhorar a interface de feedback para as tentativas de adivinhação.
-
-## Licença
-
-Este projeto está licenciado sob a [MIT License](LICENSE).
-
+## 💡 Tecnologias Utilizadas  
+🐍 Python 3.10 + Flask  
+🐘 PostgreSQL 16  
+⚛️ React + TypeScript  
+🔧 Docker + Docker Compose  
+🌐 NGINX (Alpine)  
