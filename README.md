@@ -44,40 +44,38 @@ guess_game/
 \`\`\`
 
 ## ⚙️ Instalação e Execução  
-1. Clone o repositório  
-\`\`\`bash
+1. Clone o repositório
+   
 git clone https://github.com/fams/guess_game  
 cd guess_game  
-\`\`\`  
 
-2. Execute o build e suba os serviços  
-\`\`\`bash
+3. Execute o build e suba os serviços  
+
 docker compose up -d --build  
-\`\`\`  
 
-3. Acesse a aplicação  
+4. Acesse a aplicação  
 🌐 http://localhost  
 
 ## ♻️ Atualização de Componentes  
 Atualize backend:  
-\`\`\`bash
+
 docker compose build backend1 backend2  
 docker compose up -d  
-\`\`\`  
+
 
 Atualize frontend:  
-\`\`\`bash
+
 docker compose build frontend  
 docker compose up -d  
-\`\`\`  
 
-Atualize PostgreSQL: troque a versão no \`docker-compose.yml\`, mantendo o volume \`pgdata\`.  
+
+Atualize PostgreSQL: troque a versão no docker-compose.yml, mantendo o volume pgdata.  
 
 ## 🧠 Estratégia Técnica  
 
 ### 🔀 NGINX como Proxy Reverso  
-Configuração (\`nginx.conf\`):  
-\`\`\`
+Configuração nginx.conf:  
+
 upstream backend {
     server backend1:5000;
     server backend2:5000;
@@ -85,7 +83,7 @@ upstream backend {
 location /api/ {
     proxy_pass http://backend;
 }
-\`\`\`
+
 
 - \`/api/\` é balanceado entre as instâncias do backend  
 - \`/\` serve os arquivos do frontend React  
@@ -97,18 +95,18 @@ volumes:
   - pgdata:/var/lib/postgresql/data
 \`\`\`
 
-Salvos no host via \`/var/lib/docker/volumes\`.  
+Salvos no host via /var/lib/docker/volumes\.  
 
 ### 🛡️ Resiliência  
-Todos os serviços usam \`restart: always\`, garantindo:  
-- Autorestart em falhas  
-- Estabilidade contínua mesmo após reinicializações  
+Todos os serviços usam restart: always, garantindo:  
+- Autorestart em falhas
+- Estabilidade contínua mesmo após reinicializações
 
 ## 🎮 Como Jogar  
 1. Acesse http://localhost  
 2. Clique em "Create Game" e insira uma senha  
-3. Copie o \`game_id\` gerado  
-4. Vá para a aba "Breaker", insira o \`game_id\` e tente adivinhar  
+3. Copie o game_id gerado  
+4. Vá para a aba "Breaker", insira o game_id e tente adivinhar  
 
 ## 💡 Tecnologias Utilizadas  
 🐍 Python 3.10 + Flask  
