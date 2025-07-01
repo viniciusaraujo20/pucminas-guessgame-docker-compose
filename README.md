@@ -85,15 +85,14 @@ location /api/ {
 }
 
 
-- \`/api/\` é balanceado entre as instâncias do backend  
+- /api/ é balanceado entre as instâncias do backend  
 - \`/\` serve os arquivos do frontend React  
 
 ### 🗄️ Volume Persistente  
 O banco PostgreSQL salva dados em:  
-\`\`\`yaml
+
 volumes:
   - pgdata:/var/lib/postgresql/data
-\`\`\`
 
 Salvos no host via /var/lib/docker/volumes\.  
 
