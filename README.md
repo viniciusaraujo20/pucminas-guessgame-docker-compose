@@ -52,7 +52,7 @@ guess_game/
 │   └── Dockerfile
 ├── nginx/                 # Configuração do proxy reverso
 │   └── nginx.conf
-├── repository/            # Persistência em banco
+├── repository/            
 ├── run.py                 # Entry point do backend
 ├── start-backend.sh       # Script de inicialização Flask
 ```
