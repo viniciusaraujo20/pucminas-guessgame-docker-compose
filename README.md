@@ -34,7 +34,7 @@ Criar uma arquitetura em containers com:
 - [x] Banco de dados Postgres com volume Docker
 - [x] Frontend React servido via NGINX
 - [x] NGINX com balanceamento de carga entre múltiplas instâncias do backend
-- [x] Resiliência com `restart: always` para todos os serviços
+- [x] Resiliência com `restart: on-failure` para todos os serviços
 - [x] Fácil atualização de qualquer serviço
 - [x] Comunicação total entre os containers
 - [x] Volume persistente `postgres-data` para dados do Postgres
@@ -153,7 +153,7 @@ Esse volume é montado em:
 Todos os serviços utilizam:
 
 ```yaml
-restart: always
+restart: on-failure
 ```
 
 Garantindo que:
