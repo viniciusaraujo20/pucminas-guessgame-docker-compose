@@ -50,7 +50,6 @@ guess_game/
 ├── frontend/
 │   ├── Dockerfile              # Dockerfile do frontend
 │   ├── default.conf            # Configuração NGINX (proxy + frontend)
-├── nginx/                      # (não usado mais diretamente)
 ├── run.py                     # Entry point do backend
 ├── start-backend.sh           # Inicialização do Flask app
 ├── requirements.txt
