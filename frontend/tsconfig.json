@@ -1,7 +1,9 @@
 {
   "exclude": ["cypress.config.ts", "cypress", "node_modules"],
   "compilerOptions": {
-    "jsx": "react",
+    "jsx": "react-jsx",
+    "types": ["react", "react-dom"],
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
     /* Visit https://aka.ms/tsconfig to read more about this file */
 
     /* Projects */
