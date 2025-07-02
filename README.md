@@ -145,6 +145,12 @@ Esse volume é montado em:
 - postgres-data:/var/lib/postgresql/data
 ```
 
+O Docker monta esse volume automaticamente no host em:
+
+```yaml
+- /var/lib/docker/volumes/pucminas-guessgame-docker-compose_postgres-data/_data
+```
+
 ---
 
 ## 🛡️ Resiliência
